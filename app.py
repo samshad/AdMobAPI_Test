@@ -53,8 +53,8 @@ if __name__ == '__main__':
     report = test.generate_report()
     print(type(report), len(report))
 
-    with open('sample_full.json', 'w') as f:
-        json.dumps(report, f)
+    with open('data.json', 'w') as f:
+        json.dump(report, f)
 
     """for data in report[1:2]:
         app = data['row']['dimensionValues']['APP']['displayLabel']
