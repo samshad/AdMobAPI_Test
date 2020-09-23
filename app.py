@@ -5,6 +5,7 @@ from oauth2client.file import Storage
 from oauth2client.client import OAuth2WebServerFlow
 
 import json
+import pandas as pd
 
 
 class AdmobApi:
@@ -56,7 +57,9 @@ if __name__ == '__main__':
     with open("data.json") as f:
         report = json.load(f)
 
-    for data in report[0:5]:
+    arr_csv = []
+
+    for data in report:
         if 'row' in data:
             app = data['row']['dimensionValues']['APP']['displayLabel']
             country = data['row']['dimensionValues']['COUNTRY']['value']
@@ -70,5 +73,27 @@ if __name__ == '__main__':
             ad_format = data['row']['dimensionValues']['FORMAT']['value']
 
             dimensions = [day, month, year, app, country, platform, ad_format, ad_unit]
+
+            estimated_earnings = "{:.4f}".format(float(data['row']['metricValues']['ESTIMATED_EARNINGS']['microsValue'])
+                                                 / 1000000.0)
+            clicks = data['row']['metricValues']['CLICKS']['integerValue']
+            impressions = data['row']['metricValues']['IMPRESSIONS']['integerValue']
+            match_request = data['row']['metricValues']['MATCHED_REQUESTS']['integerValue']
+            match_rate = data['row']['metricValues']['MATCH_RATE']['doubleValue'] if 'MATCH_RATE' in data['row']['metricValues'] else 0.0
+            show_rate = data['row']['metricValues']['SHOW_RATE']['doubleValue'] if 'SHOW_RATE' in data['row']['metricValues'] else 0.0
+
+            eCPM = (float(estimated_earnings) / float(impressions)) * 1000 if float(impressions) != 0 else 0
+
+            metrics = [eCPM, estimated_earnings, clicks, impressions, match_request, match_rate, show_rate]
+
+            arr = dimensions
+            for i in metrics:
+                arr.append(i)
+            arr_csv.append(arr)
+
+    df = pd.DataFrame(arr_csv, columns=['day', 'month', 'year', 'app', 'country', 'platform', 'ad_format', 'ad_unit',
+                                        'eCPM', 'estimated_earnings', 'clicks', 'impressions', 'match_request',
+                                        'match_rate', 'show_rate'])
+    df.to_csv('sample.csv', index=False)
 
 
