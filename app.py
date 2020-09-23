@@ -50,18 +50,25 @@ class AdmobApi:
 
 if __name__ == '__main__':
     test = AdmobApi()
-    report = test.generate_report()
-    print(type(report), len(report))
+    # report = test.generate_report()
+    # print(type(report), len(report))
 
-    with open('data.json', 'w') as f:
-        json.dump(report, f)
+    with open("data.json") as f:
+        report = json.load(f)
 
-    """for data in report[1:2]:
-        app = data['row']['dimensionValues']['APP']['displayLabel']
-        country = data['row']['dimensionValues']['COUNTRY']['value']
-        date = data['row']['dimensionValues']['DATE']['value']
-        year = date[:4]
-        month = date[4:6]
-        day = date[6:]
-        date_formated = '-'.join([day, month, year])
-        print(date, date_formated)"""
+    for data in report[0:5]:
+        if 'row' in data:
+            app = data['row']['dimensionValues']['APP']['displayLabel']
+            country = data['row']['dimensionValues']['COUNTRY']['value']
+            date = data['row']['dimensionValues']['DATE']['value']
+            year = date[:4]
+            month = date[4:6]
+            day = date[6:]
+            date_formated = '-'.join([day, month, year])
+            platform = data['row']['dimensionValues']['PLATFORM']['value']
+            ad_unit = data['row']['dimensionValues']['AD_UNIT']['displayLabel']
+            ad_format = data['row']['dimensionValues']['FORMAT']['value']
+
+            dimensions = [day, month, year, app, country, platform, ad_format, ad_unit]
+
+
