@@ -1,9 +1,7 @@
 venv/
 .idea/
 Auth/
+Data/
 admob.dat
 00.py
-codebeautify.json
-sample_data.json
-data.json
-sample.csv
+
