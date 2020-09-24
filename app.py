@@ -104,11 +104,8 @@ class AdmobApi:
 
 if __name__ == '__main__':
     test = AdmobApi()
-    # report = test.get_report()
+    report = test.get_report()
     # print(type(report), len(report))
-
-    with open("Data/data.json") as f:
-        report = json.load(f)
 
     test.parse_data(report)
     test.insert_db()
