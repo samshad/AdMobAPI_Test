@@ -6,10 +6,13 @@ from oauth2client.client import OAuth2WebServerFlow
 
 import json
 import pandas as pd
+import db
 
 
 class AdmobApi:
     def __init__(self):
+        self.arr_csv = []
+
         with open("Auth/configs.json") as f:
             self.configs = json.load(f)
 
@@ -49,8 +52,6 @@ class AdmobApi:
                                                               body=request).execute()
 
     def parse_data(self, report):
-        arr_csv = []
-
         for data in report:
             if 'row' in data:
                 app = data['row']['dimensionValues']['APP']['displayLabel']
@@ -59,12 +60,12 @@ class AdmobApi:
                 year = date[:4]
                 month = date[4:6]
                 day = date[6:]
-                date_formated = '-'.join([day, month, year])
+                date_formated = '-'.join([year, month, day])
                 platform = data['row']['dimensionValues']['PLATFORM']['value']
                 ad_unit = data['row']['dimensionValues']['AD_UNIT']['displayLabel']
                 ad_format = data['row']['dimensionValues']['FORMAT']['value']
 
-                dimensions = [day, month, year, app, country, platform, ad_format, ad_unit]
+                dimensions = [date_formated, app, country, platform, ad_format, ad_unit]
 
                 estimated_earnings = float(data['row']['metricValues']['ESTIMATED_EARNINGS']['microsValue']) / 1000000.0
                 clicks = data['row']['metricValues']['CLICKS']['integerValue']
@@ -77,18 +78,28 @@ class AdmobApi:
 
                 eCPM = ((float(estimated_earnings) / float(impressions)) * 1000.0) if float(impressions) != 0 else 0
 
-                metrics = [eCPM, estimated_earnings, clicks, impressions, match_request, match_rate, show_rate]
+                metrics = [estimated_earnings, clicks, impressions, match_request, match_rate, show_rate]
 
                 arr = dimensions
                 for i in metrics:
                     arr.append(i)
-                arr_csv.append(arr)
+                self.arr_csv.append(arr)
 
-        df = pd.DataFrame(arr_csv,
-                          columns=['day', 'month', 'year', 'app', 'country', 'platform', 'ad_format', 'ad_unit',
-                                   'eCPM', 'estimated_earnings', 'clicks', 'impressions', 'match_request',
+    def write_csv(self):
+        df = pd.DataFrame(self.arr_csv,
+                          columns=['date_formated', 'app', 'country', 'platform', 'ad_format', 'ad_unit',
+                                   'estimated_earnings', 'clicks', 'impressions', 'match_request',
                                    'match_rate', 'show_rate'])
         df.to_csv('Data/sample_tmp.csv', index=False)
+
+    def insert_db(self):
+        dbObj = db.MySql()
+        dbObj.drop_table()
+        dbObj.create_table()
+        for arr in self.arr_csv:
+            dbObj.insert_data([arr[0], arr[1], arr[2], arr[3], arr[4], arr[5], arr[6], arr[7], arr[8], arr[9], arr[10],
+                               arr[11], "admob"])
+        dbObj.print_table()
 
 
 if __name__ == '__main__':
@@ -100,4 +111,4 @@ if __name__ == '__main__':
         report = json.load(f)
 
     test.parse_data(report)
-
+    test.insert_db()

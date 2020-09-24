@@ -2,6 +2,7 @@ venv/
 .idea/
 Auth/
 Data/
+__pycache__/
 admob.dat
 00.py
 
