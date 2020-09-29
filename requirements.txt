@@ -3,3 +3,4 @@ google-auth-oauthlib==0.4.1
 oauth2client==4.1.3
 pandas==1.1.2
 mysql-connector-python
+APScheduler==3.6.3

@@ -7,6 +7,7 @@ from oauth2client.client import OAuth2WebServerFlow
 import json
 import pandas as pd
 import db
+import datetime
 
 
 class AdmobApi:
@@ -94,17 +95,17 @@ class AdmobApi:
 
     def insert_db(self):
         dbObj = db.MySql()
-        dbObj.drop_table()
+        #dbObj.drop_table()
         dbObj.create_table()
-        for arr in self.api_data:
+        for arr in self.api_data[:2]:
             dbObj.insert_data([arr[0], arr[1], arr[2], arr[3], arr[4], arr[5], arr[6], arr[7], arr[8], arr[9], arr[10],
                                arr[11], "admob"])
-        dbObj.print_table()
+        # dbObj.print_table()
 
 
-if __name__ == '__main__':
+'''if __name__ == '__main__':
     test = AdmobApi()
-    report_json = test.get_report("2020-09-22", "2020-09-23")
+    report_json = test.get_report("2020-09-22", "2020-09-22")
 
     test.parse_data(report_json)
-    test.insert_db()
+    test.insert_db()'''

@@ -12,10 +12,10 @@ class MySql:
         self.mycursor = self.db.cursor()
 
     def create_table(self):
-        sql = "CREATE TABLE test (date DATE, app VARCHAR(100), country VARCHAR(20), platform VARCHAR(15), " \
-                                "ad_format VARCHAR(20), ad_unit VARCHAR(50), estimated_earnings DOUBLE, clicks int, " \
-                                "impressions int, match_request int, match_rate DOUBLE, show_rate DOUBLE, " \
-                                "ad_network VARCHAR(20), id int PRIMARY KEY AUTO_INCREMENT)"
+        sql = "CREATE TABLE IF NOT EXISTS test (date DATE, app VARCHAR(100), country VARCHAR(20), " \
+              "platform VARCHAR(15), ad_format VARCHAR(20), ad_unit VARCHAR(50), estimated_earnings DOUBLE, " \
+              "clicks int, impressions int, match_request int, match_rate DOUBLE, show_rate DOUBLE, " \
+              "ad_network VARCHAR(20), id int PRIMARY KEY AUTO_INCREMENT)"
         self.mycursor.execute(sql)
 
     def insert_data(self, data):
@@ -35,4 +35,3 @@ class MySql:
         sql = "DROP TABLE test"
         self.mycursor.execute(sql)
         self.db.commit()
-
